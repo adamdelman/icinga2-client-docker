@@ -29,4 +29,4 @@ chown -R nagios:root /etc/icinga2
 # enable neccessary features
 icinga2 feature enable api livestatus compatlog command
 
-/opt/create_ticket.py --icinga-hostname ${ICINGA2_MASTER_HOST} --username ${ICINGA2_API_USERNAME} --password ${ICINGA2_API_PASSWORD}
+/opt/setup/register_icinga_client.py --icinga-hostname ${ICINGA2_MASTER_HOST} --username ${ICINGA2_API_USERNAME} --password ${ICINGA2_API_PASSWORD}
