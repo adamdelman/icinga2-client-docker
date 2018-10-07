@@ -30,12 +30,11 @@ def get_ticket_salt(
             password=password,
         ),
     ).json()
-    print(response)
     ticket_salt = response['results'][0]['ticket']
 
     print(
         'Ticket salt is {ticket_salt}'.format(
-            ticket_salt=ticket_salt
+            ticket_salt=ticket_salt,
         ),
     )
     return ticket_salt
@@ -162,8 +161,6 @@ def create_new_certificate(
             '/etc/icinga2/pki/{hostname}.crt'.format(
                 hostname=local_hostname,
             ),
-            '--trustedcert',
-            '/etc/icinga2/pki/trusted-master.crt',
             '--cn',
             local_hostname,
         ],
