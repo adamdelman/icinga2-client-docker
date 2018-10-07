@@ -71,27 +71,28 @@ def main():
         username=args.username,
         password=args.password,
     )
-    subprocess.check_call(
-        ['icinga2',
-         'pki',
-         'save-cert',
-         '--host',
-         args.icinga_hostname,
-         '--port',
-         '5665',
-         '--key',
-         '/etc/icinga2/pki/{hostname}.key'.format(
-             hostname=platform.node(),
-         ),
-         '--cert',
-         '/etc/icinga2/pki/{hostname}.crt'.format(
-             hostname=platform.node(),
-         ),
-         '--trustedcert',
-         '/etc/icinga2/pki/trusted-master.crt',
-         ],
-        stdout=sys.stdout,
+    local_hostname = platform.node()
+    create_new_certificate(
+        local_hostname=local_hostname,
     )
+
+    get_icinga_master_certificate(
+        local_hostname=local_hostname,
+        icinga_hostname=args.icinga_hostname,
+    )
+
+    create_login_ticket(
+        local_hostname=local_hostname,
+        icinga_hostname=args.icinga_hostname,
+        ticket_salt=ticket_salt,
+    )
+
+
+def create_login_ticket(
+    icinga_hostname,
+    local_hostname,
+    ticket_salt,
+):
     subprocess.check_call(
         [
             'icinga2',
@@ -100,17 +101,71 @@ def main():
             '--ticket',
             ticket_salt,
             '--endpoint',
-            args.icinga_hostname,
+            icinga_hostname,
             '--accept-config',
             '--accept-commands',
             '--zone',
-            platform.node(),
+            local_hostname,
             '--master_host',
-            args.icinga_hostname,
+            icinga_hostname,
             '--cn',
-            platform.node(),
+            local_hostname,
             '--trustedcert',
             '/etc/icinga2/pki/trusted-master.crt',
+        ],
+        stdout=sys.stdout,
+    )
+
+
+def get_icinga_master_certificate(
+    local_hostname,
+    icinga_hostname,
+):
+    subprocess.check_call(
+        [
+            'icinga2',
+            'pki',
+            'save-cert',
+            '--host',
+            icinga_hostname,
+            '--port',
+            '5665',
+            '--key',
+            '/etc/icinga2/pki/{hostname}.key'.format(
+                hostname=local_hostname,
+            ),
+            '--cert',
+            '/etc/icinga2/pki/{hostname}.crt'.format(
+                hostname=local_hostname,
+            ),
+            '--trustedcert',
+            '/etc/icinga2/pki/trusted-master.crt',
+        ],
+        stdout=sys.stdout,
+    )
+
+
+def create_new_certificate(
+    local_hostname,
+):
+    subprocess.check_call(
+        [
+            'icinga2',
+            'pki',
+            'new-cert',
+            '--key',
+            '/etc/icinga2/pki/{hostname}.key'.format(
+                hostname=local_hostname,
+            ),
+
+            '--cert',
+            '/etc/icinga2/pki/{hostname}.crt'.format(
+                hostname=local_hostname,
+            ),
+            '--trustedcert',
+            '/etc/icinga2/pki/trusted-master.crt',
+            '--cn',
+            local_hostname,
         ],
         stdout=sys.stdout,
     )

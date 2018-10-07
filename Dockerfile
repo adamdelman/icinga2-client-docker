@@ -27,8 +27,8 @@ RUN apt-get -qy upgrade \
      && rm -rf /var/lib/apt/lists/*
 
 ADD content /
+RUN chmod +x /opt/create_ticket.py
 
-# Final fixes
 RUN mv /etc/icinga2/ /etc/icinga2.dist \
     && mkdir /etc/icinga2 \
     && chmod u+s,g+s \
