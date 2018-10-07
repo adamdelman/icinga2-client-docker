@@ -19,7 +19,8 @@ Recommended execution is via `docker-compose`. There is too much stuff which has
 | ---------------------- | ---------------------- | ----------- |
 | `ICINGA2_MASTER_HOST`  | mon                    | The hostname of icinga2
 | `ICINGA2_MASTER_FQDN`  | *$ICINGA2_MASTER_HOST* | If your icinga2 master certs' FQDN does not match the hostname, define this in addition. If you set `ICINGA2_MASTER_HOST` correctly, you should not worry about this. |
-| `ICINGA2_MASTER_PORT`  | 5665                   | Default port on the icinga2 master. |
+| `ICINGA2_API_USERNAME`  |                    | The Icinga API user used to create login tickets. |
+| `ICINGA2_API_PASSWORD`  |                 | The Icinga API password used to create login tickets. |
 ## Volume Reference
 
 All these folders are configured and able to get mounted as volume. The bottom ones are not quite neccessary.

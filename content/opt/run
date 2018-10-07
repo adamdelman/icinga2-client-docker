@@ -6,7 +6,7 @@ if [ -f /opt/custom_run ]; then
     /opt/custom_run
 fi
 
-/opt/create_ticket.py
+/opt/create_ticket.py --icinga-hostname ${ICINGA2_MASTER_HOST} --username ${ICINGA2_API_USERNAME} --password ${ICINGA2_API_PASSWORD}
 
 /opt/setup/icinga2
 
