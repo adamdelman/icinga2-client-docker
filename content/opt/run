@@ -6,12 +6,14 @@ if [ -f /opt/custom_run ]; then
     /opt/custom_run
 fi
 
+/opt/create_ticket.py
+
 /opt/setup/icinga2
 
 service icinga2 start
 
 trap "service icinga2 stop" HUP INT QUIT ABRT KILL ALRM TERM TSTP
 
-tail -f /var/log/icinga2/icinga2.log &
+tail -F /var/log/icinga2/icinga2.log &
 
 while pidof icinga2 &>/dev/null; do sleep 5; done

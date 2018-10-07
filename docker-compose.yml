@@ -3,14 +3,13 @@ services:
   icinga2:
     image: bebehei/icinga2-client
     restart: on-failure:5
+    #Set the correct hostname for the image.
     hostname: icinga2
     privileged: true
     network_mode: host
     environment:
-      # Fill it with the output of icinga2 pki ticket --cn <hostname> on your master
-      - ICINGA2_TICKET_SALT=
       - ICINGA2_MASTER_HOST=mon
-      # if your master's fqdn does not match the hostname define the name additionally
+      # If your master's FQDN does not match the hostname, define the name additionally.
       #- ICINGA2_MASTER_FQDN=mon
     volumes:
       - ./cache:/var/cache/icinga2

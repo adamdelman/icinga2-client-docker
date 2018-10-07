@@ -1,31 +1,35 @@
-# Dockerfile for icinga2 as monitored client
-FROM debian:jessie
+FROM debian:stretch
 
-MAINTAINER Benedikt Heine
+MAINTAINER Adam Delman
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ADD content/ /
-
-RUN apt-key add /opt/setup/icinga2.key \
-     && apt-get -q  update \
-     && apt-get -qy upgrade \
+RUN apt update
+RUN apt install -qy curl gnupg2 && curl https://packages.icinga.com/icinga.key | apt-key add -
+RUN apt-get -qy upgrade \
      && apt-get -qy install --no-install-recommends \
           ethtool \
           icinga2 \
           monitoring-plugins \
           net-tools \
           procps \
+          gnupg2 \
+          python3 \
+          python3-pip \
+          python3-requests \
           smartmontools \
           snmp \
+          strace \
           sysstat \
-          sudo \
+          vim \
+          wget \
      && apt-get clean \
      && rm -rf /var/lib/apt/lists/*
 
+ADD content /
+
 # Final fixes
-RUN true \
-    && mv /etc/icinga2/ /etc/icinga2.dist \
+RUN mv /etc/icinga2/ /etc/icinga2.dist \
     && mkdir /etc/icinga2 \
     && chmod u+s,g+s \
         /bin/ping \
