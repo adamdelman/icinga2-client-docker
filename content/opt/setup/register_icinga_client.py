@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import glob
+import os
 import sys
 
 import requests
@@ -66,6 +68,23 @@ def parse_args():
     return arg_parser.parse_args()
 
 
+def cleanup():
+    for file in glob.glob('/etc/icinga2/conf.d/*.conf'):
+        os.remove(file)
+
+
+def restart_icinga():
+
+    subprocess.check_call(
+        [
+            'service',
+            'icinga2',
+            'restart',
+        ],
+        stdout=sys.stdout,
+    )
+
+
 def main():
     args = parse_args()
     local_hostname = socket.getfqdn()
@@ -90,6 +109,9 @@ def main():
         icinga_hostname=args.icinga_hostname,
         ticket_salt=ticket_salt,
     )
+
+    cleanup()
+    restart_icinga()
 
 
 def setup_local_node(
