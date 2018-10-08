@@ -3,12 +3,13 @@ import sys
 
 import requests
 import requests.auth
-import platform
+import socket
 import argparse
 import subprocess
 
 
 def get_ticket_salt(
+    local_hostname,
     icinga_host,
     username,
     password,
@@ -16,10 +17,10 @@ def get_ticket_salt(
     response = requests.post(
         url='https://{icinga_host}:5665/v1/actions/generate-ticket'.format(
             icinga_host=icinga_host,
-            hostname=platform.node(),
+            hostname=local_hostname,
         ),
         json={
-            'cn': platform.node(),
+            'cn': local_hostname,
         },
         headers={
             'Accept': 'application/json',
@@ -46,17 +47,20 @@ def parse_args():
         '-H',
         '--icinga-hostname',
         help='The hostname of the Icinga API instance',
+        required=True,
     )
     arg_parser.add_argument(
         '-u',
         '--username',
-        help='The API username for icinga',
+        help='The API username for Icinga',
+        required=True,
     )
 
     arg_parser.add_argument(
         '-p',
         '--password',
-        help='The API password for icinga',
+        help='The API password for Icinga',
+        required=True,
     )
 
     return arg_parser.parse_args()
@@ -64,13 +68,14 @@ def parse_args():
 
 def main():
     args = parse_args()
+    local_hostname = socket.getfqdn()
 
     ticket_salt = get_ticket_salt(
+        local_hostname=local_hostname,
         icinga_host=args.icinga_hostname,
         username=args.username,
         password=args.password,
     )
-    local_hostname = platform.node()
     create_new_certificate(
         local_hostname=local_hostname,
     )
@@ -80,14 +85,14 @@ def main():
         icinga_hostname=args.icinga_hostname,
     )
 
-    create_login_ticket(
+    setup_local_node(
         local_hostname=local_hostname,
         icinga_hostname=args.icinga_hostname,
         ticket_salt=ticket_salt,
     )
 
 
-def create_login_ticket(
+def setup_local_node(
     icinga_hostname,
     local_hostname,
     ticket_salt,

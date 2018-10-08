@@ -2,14 +2,15 @@
 
 This repository contains the source for the [icinga2](https://www.icinga.org/icinga2/) [docker](https://www.docker.com) image.
 
-It is only the **client side**. When used inside a priviledged container, you'll be able to monitor the whole machine with this image.
+It is only the **client side**. When used inside a privileged container, you'll be able to monitor the whole machine with this image.
 
 For the **master node** consult [@jjethwa's docker image](https://github.com/jjethwa/icinga2/).
+
+This image automatically configures the Icinga client up with the master Icinga node, using the provided API credentials.
 
 Recommended execution is via `docker-compose`. There is too much stuff which has to be configured outside the container to run it via plain `docker run` but of course, it would be possible.
 
     wget https://raw.githubusercontent.com/bebehei/icinga2-client-docker/master/docker-compose.yml
-    #add your ticket-salt information
     $EDITOR docker-compose.yml
     docker-compose up
 
