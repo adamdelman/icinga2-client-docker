@@ -68,27 +68,6 @@ def parse_args():
     return arg_parser.parse_args()
 
 
-def cleanup():
-    for file in glob.glob('/etc/icinga2/conf.d/hosts.conf'):
-        os.remove(file)
-
-
-def setup_global_zones():
-    zones_config = '''object Zone "director-global" {
-        global = true
-    }
-
-    object Zone "global-templates" {
-        global = true
-    }
-
-'''
-    with open(
-        '/etc/icinga2/conf.d/global-zones.conf',
-        'w',
-    ) as zones_file:
-        zones_file.write(zones_config)
-
 
 def main():
     args = parse_args()
@@ -115,9 +94,6 @@ def main():
         ticket_salt=ticket_salt,
     )
 
-    cleanup()
-    setup_global_zones()
-
 
 def setup_local_node(
     icinga_hostname,
@@ -137,12 +113,15 @@ def setup_local_node(
             '--accept-commands',
             '--zone',
             local_hostname,
-            '--master_host',
+            '--parent_host',
             icinga_hostname,
+            '--parent_zone',
+            'master',
             '--cn',
             local_hostname,
             '--trustedcert',
             '/etc/icinga2/pki/trusted-master.crt',
+            '--disable-confd',
         ],
         stdout=sys.stdout,
     )
