@@ -28,9 +28,8 @@ RUN \
           wget
 
 ADD content /
-ADD content/opt/setup/setup-aur /usr/sbin/setup-aur
-RUN chmod +x /usr/sbin/setup-aur
-RUN setup-aur docker
+RUN chmod +x /opt/setup/setup-aur
+RUN /opt/setup/setup-aur docker
 RUN sudo -u docker trizen -S icinga2 --noedit --noconfirm
 RUN pacman -Scc
 RUN systemctl enable icinga2

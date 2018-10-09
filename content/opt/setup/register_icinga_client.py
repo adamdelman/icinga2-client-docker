@@ -69,20 +69,25 @@ def parse_args():
 
 
 def cleanup():
-    for file in glob.glob('/etc/icinga2/zones.d/hosts.conf'):
+    for file in glob.glob('/etc/icinga2/conf.d/hosts.conf'):
         os.remove(file)
 
 
-def restart_icinga():
+def setup_global_zones():
+    zones_config = '''object Zone "director-global" {
+        global = true
+    }
 
-    subprocess.check_call(
-        [
-            'systemctl',
-            'restart',
-            'icinga',
-        ],
-        stdout=sys.stdout,
-    )
+    object Zone "global-templates" {
+        global = true
+    }
+
+'''
+    with open(
+        '/etc/icinga2/conf.d/global-zones.conf',
+        'w',
+    ) as zones_file:
+        zones_file.write(zones_config)
 
 
 def main():
@@ -111,7 +116,7 @@ def main():
     )
 
     cleanup()
-    restart_icinga()
+    setup_global_zones()
 
 
 def setup_local_node(
