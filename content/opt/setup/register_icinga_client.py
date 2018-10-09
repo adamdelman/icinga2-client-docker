@@ -68,7 +68,6 @@ def parse_args():
     return arg_parser.parse_args()
 
 
-
 def main():
     args = parse_args()
     local_hostname = socket.getfqdn()
@@ -121,7 +120,6 @@ def setup_local_node(
             local_hostname,
             '--trustedcert',
             '/etc/icinga2/pki/trusted-master.crt',
-            '--disable-confd',
         ],
         stdout=sys.stdout,
     )
