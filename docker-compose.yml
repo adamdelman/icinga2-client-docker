@@ -1,7 +1,7 @@
 version: '2'
 services:
   icinga2:
-    image: bebehei/icinga2-client
+    image: adamdelman/icinga-client
     restart: on-failure:5
     #Set the correct hostname for the image.
     hostname: icinga2

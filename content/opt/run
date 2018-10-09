@@ -1,14 +1,36 @@
 #!/bin/bash
 
-if [ -f /opt/custom_run ]; then
-    chmod u+x /opt/custom_run
-    echo "=>executing /opt/custom_run"
-    /opt/custom_run
+ICINGA2_MASTER_HOST=${ICINGA2_MASTER_HOST:-mon}
+ICINGA2_MASTER_FQDN=${ICINGA2_MASTER_FQDN:-$ICINGA2_MASTER_HOST}
+ICINGA2_MASTER_PORT=${ICINGA2_MASTER_PORT:-5665}
+ICINGA2_API_USERNAME=${ICINGA2_API_USERNAME:-root}
+ICINGA2_API_PASSWORD=${ICINGA2_API_PASSWORD:-root}
+ICINGA2_CLIENT_FQDN=${ICINGA2_CLIENT_FQDN:-$(hostname --fqdn)}
+
+if [ ! "$(ls -A /etc/icinga2)" ]; then
+  echo "=> Copying fresh config-files for /etc/icinga2"
+  cp -R /etc/icinga2.dist/* /etc/icinga2/
 fi
 
-/opt/setup/icinga2
+# chown directories and files that might be coming from volumes
+mkdir -p /var/log/icinga2/compat/archives
+chown -R icinga:adm /var/log/icinga2
 
-service icinga2 start
+mkdir -p /var/lib/icinga2/api/zones
+mkdir -p /var/lib/icinga2/api/log
+mkdir -p /var/lib/icinga2/api/repository
+chown -R icinga:icinga /var/lib/icinga2
+chown -R icinga:icinga /var/spool/icinga2
+chown -R icinga:icinga /var/cache/icinga2
+
+chown -R icinga:root /etc/icinga2
+
+# enable neccessary features
+icinga2 feature enable api livestatus compatlog command
+
+/opt/setup/register_icinga_client.py --icinga-hostname ${ICINGA2_MASTER_HOST} --username ${ICINGA2_API_USERNAME} --password ${ICINGA2_API_PASSWORD}
+
+icinga2 daemon -d
 
 trap "service icinga2 stop" HUP INT QUIT ABRT KILL ALRM TERM TSTP
 

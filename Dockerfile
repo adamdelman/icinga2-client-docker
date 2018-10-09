@@ -1,40 +1,41 @@
-FROM debian:stretch
+FROM base/archlinux
 
 MAINTAINER Adam Delman
 
-ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update
-RUN apt install -qy curl gnupg2 && curl https://packages.icinga.com/icinga.key | apt-key add -
-RUN apt-get -qy upgrade \
-     && apt-get -qy install --no-install-recommends \
+RUN \
+    sed -i 's/^SigLevel.*/SigLevel = Never/' /etc/pacman.conf && \
+    locale-gen en_US.UTF-8 && \
+    pacman -Syyu --noconfirm && \
+    pacman -S --noconfirm reflector && \
+    reflector --verbose --country 'United States' -l 100 --sort rate --save /etc/pacman.d/mirrorlist
+
+RUN \
+    pacman -Syyu --noconfirm && \
+    pacman -S --noconfirm \
           ethtool \
-          icinga2 \
           monitoring-plugins \
+          base-devel \
           net-tools \
           procps \
           gnupg2 \
-          python3 \
-          python3-pip \
-          python3-requests \
+          python \
+          python-requests \
           smartmontools \
-          snmp \
           strace \
           sysstat \
           vim \
-          wget \
-     && apt-get clean \
-     && rm -rf /var/lib/apt/lists/*
+          wget
 
 ADD content /
-RUN chmod +x /opt/setup/register_icinga_client.py
+ADD content/opt/setup/setup-aur /usr/sbin/setup-aur
+RUN chmod +x /usr/sbin/setup-aur
+RUN setup-aur docker
+RUN sudo -u docker trizen -S icinga2 --noedit --noconfirm
+RUN pacman -Scc
+RUN systemctl enable icinga2
 
-RUN mv /etc/icinga2/ /etc/icinga2.dist \
-    && mkdir /etc/icinga2 \
-    && chmod u+s,g+s \
-        /bin/ping \
-        /bin/ping6 \
-        /usr/lib/nagios/plugins/check_icmp
+RUN chmod +x /opt/setup/register_icinga_client.py
 
 EXPOSE 80 443 5665
 
