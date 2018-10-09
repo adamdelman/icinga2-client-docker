@@ -71,6 +71,7 @@ def parse_args():
 def cleanup():
     for file in glob.glob('/etc/icinga2/conf.d/*.conf'):
         os.remove(file)
+    os.removedirs('/var/lib/icinga2/api/zones/')
 
 
 def restart_icinga():
