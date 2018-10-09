@@ -69,7 +69,7 @@ def parse_args():
 
 
 def cleanup():
-    for file in glob.glob('/etc/icinga2/conf.d/*.conf'):
+    for file in glob.glob('/etc/icinga2/zones.d/hosts.conf'):
         os.remove(file)
 
 
