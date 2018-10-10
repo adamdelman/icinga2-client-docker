@@ -28,7 +28,10 @@ RUN apt-get -qy upgrade \
      && rm -rf /var/lib/apt/lists/*
 
 
-ADD content/ /
+ADD content/etc/icinga2/conf.d/global-zones.conf /etc/icinga2/conf.d/global-zones.conf
+ADD content/etc/sudoers.d/icinga2 /etc/sudoers.d/icinga2
+ADD content/opt/setup/register_icinga_client.py /opt/setup/register_icinga_client.py
+ADD content/opt/run /opt/run
 
 RUN chmod +x /opt/setup/register_icinga_client.py
 

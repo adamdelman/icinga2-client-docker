@@ -63,6 +63,13 @@ def parse_args():
         required=True,
     )
 
+    arg_parser.add_argument(
+        '-P',
+        '--icinga-port',
+        help='The API port for Icinga',
+        default=5665,
+    )
+
     return arg_parser.parse_args()
 
 
@@ -87,12 +94,14 @@ def main():
     setup_local_node(
         local_hostname=local_hostname,
         icinga_hostname=args.icinga_hostname,
+        icinga_port=args.icinga_port,
         ticket=ticket,
     )
 
 
 def setup_local_node(
     icinga_hostname,
+    icinga_port,
     local_hostname,
     ticket,
 ):
@@ -105,7 +114,10 @@ def setup_local_node(
             '--ticket',
             ticket,
             '--endpoint',
-            icinga_hostname,
+            '{icinga_hostname},{icinga_hostname},{icinga_port}'.format(
+                icinga_hostname=icinga_hostname,
+                icinga_port=icinga_port,
+            ),
             '--accept-config',
             '--accept-commands',
             '--zone',

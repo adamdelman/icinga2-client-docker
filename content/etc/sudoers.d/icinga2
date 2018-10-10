@@ -4,8 +4,8 @@
 Defaults lecture = never
 
 # Some sudo-programs
-icinga ALL=(root)NOPASSWD:/usr/sbin/smartctl
-icinga ALL=(root)NOPASSWD:/usr/lib/icinga/plugins/check_dhcp
-icinga ALL=(root)NOPASSWD:/usr/lib/icinga/plugins/check_disk
-icinga ALL=(root)NOPASSWD:/sbin/dmsetup status --noflush
-icinga ALL=(root)NOPASSWD:/sbin/dmsetup status
+nagios ALL=(root)NOPASSWD:/usr/sbin/smartctl
+nagios ALL=(root)NOPASSWD:/usr/lib/nagios/plugins/check_dhcp
+nagios ALL=(root)NOPASSWD:/usr/lib/nagios/plugins/check_disk
+nagios ALL=(root)NOPASSWD:/sbin/dmsetup status --noflush
+nagios ALL=(root)NOPASSWD:/sbin/dmsetup status
