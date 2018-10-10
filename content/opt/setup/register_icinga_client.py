@@ -8,7 +8,7 @@ import argparse
 import subprocess
 
 
-def get_ticket_salt(
+def get_ticket(
     local_hostname,
     icinga_host,
     username,
@@ -31,14 +31,14 @@ def get_ticket_salt(
             password=password,
         ),
     ).json()
-    ticket_salt = response['results'][0]['ticket']
+    ticket = response['results'][0]['ticket']
 
     print(
-        'Ticket salt is {ticket_salt}'.format(
-            ticket_salt=ticket_salt,
+        'Ticket is {ticket}'.format(
+            ticket=ticket,
         ),
     )
-    return ticket_salt
+    return ticket
 
 
 def parse_args():
@@ -70,7 +70,7 @@ def main():
     args = parse_args()
     local_hostname = socket.getfqdn()
 
-    ticket_salt = get_ticket_salt(
+    ticket = get_ticket(
         local_hostname=local_hostname,
         icinga_host=args.icinga_hostname,
         username=args.username,
@@ -87,14 +87,14 @@ def main():
     setup_local_node(
         local_hostname=local_hostname,
         icinga_hostname=args.icinga_hostname,
-        ticket_salt=ticket_salt,
+        ticket=ticket,
     )
 
 
 def setup_local_node(
     icinga_hostname,
     local_hostname,
-    ticket_salt,
+    ticket,
 ):
     print('Performing setup.')
     subprocess.check_call(
@@ -103,7 +103,7 @@ def setup_local_node(
             'node',
             'setup',
             '--ticket',
-            ticket_salt,
+            ticket,
             '--endpoint',
             icinga_hostname,
             '--accept-config',

@@ -26,13 +26,13 @@ chown -R nagios:nagios /var/cache/icinga2
 
 chown -R nagios:root /etc/icinga2
 
-# enable necessary features
-icinga2 feature enable api livestatus compatlog command
-
 if [[ ! -f /var/lib/icinga2/certs/$(hostname).crt ]] || [[ ! -f /etc/icinga2/pki/trusted-master.crt ]]
 then
     /opt/setup/register_icinga_client.py --icinga-hostname ${ICINGA2_MASTER_HOST} --username ${ICINGA2_API_USERNAME} --password ${ICINGA2_API_PASSWORD}
 fi
+
+# enable necessary features
+icinga2 feature enable api livestatus compatlog command
 
 service icinga2 restart
 
