@@ -26,8 +26,6 @@ chown -R nagios:nagios /var/cache/icinga2
 
 chown -R nagios:root /etc/icinga2
 
-service icinga2 restart
-
 # enable necessary features
 icinga2 feature enable api livestatus compatlog command
 
