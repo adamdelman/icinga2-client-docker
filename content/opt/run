@@ -44,5 +44,5 @@ tail -F /var/log/icinga2/icinga.log &
 tail -F /var/log/icinga2/debug.log &
 tail -F /var/log/icinga2/mysql-schema.log &
 
-
+sleep 60
 while pidof icinga2 &>/dev/null; do sleep 10; done

@@ -1,12 +1,38 @@
 #!/usr/bin/env python3
-import io
-import sys
-
 import requests
 import requests.auth
 import socket
 import argparse
 import subprocess
+
+
+class ProcessError(
+    Exception,
+):
+    pass
+
+
+def get_process_stdout_stderr(
+    cmd_parts,
+):
+    proc = subprocess.Popen(
+        args=cmd_parts,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    stdout, stderr = proc.communicate()
+    exitcode = proc.returncode
+    if exitcode != 0:
+        raise ProcessError(
+            stdout,
+            stderr,
+            exitcode,
+        )
+
+    return (
+        stdout.decode(),
+        stderr.decode(),
+    )
 
 
 def get_ticket(
@@ -108,9 +134,8 @@ def setup_local_node(
     ticket,
 ):
     print('Performing setup.')
-    output = io.BytesIO()
-    subprocess.check_call(
-        [
+    stdout, stderr = get_process_stdout_stderr(
+        cmd_parts=[
             'icinga2',
             'node',
             'setup',
@@ -134,12 +159,12 @@ def setup_local_node(
             '--trustedcert',
             '/etc/icinga2/pki/trusted-master.crt',
         ],
-        stdout=output,
     )
 
     print(
-        'Output was: "{output}"'.format(
-            output=output.getvalue()
+        'stdout was: "{stdout}"\nstderr was: "{stderr}"'.format(
+            stdout=stdout,
+            stderr=stderr,
         ),
     )
 
@@ -148,9 +173,8 @@ def save_icinga_master_certificate(
     icinga_hostname,
 ):
     print('Getting certificate from master node.')
-    output = io.BytesIO()
-    subprocess.check_call(
-        [
+    stdout, stderr = get_process_stdout_stderr(
+        cmd_parts=[
             'icinga2',
             'pki',
             'save-cert',
@@ -161,12 +185,12 @@ def save_icinga_master_certificate(
             '--trustedcert',
             '/etc/icinga2/pki/trusted-master.crt',
         ],
-        stdout=sys.stdout,
     )
 
     print(
-        'Output was: "{output}"'.format(
-            output=output.getvalue()
+        'stdout was: "{stdout}"\nstderr was: "{stderr}"'.format(
+            stdout=stdout,
+            stderr=stderr,
         ),
     )
 
@@ -175,9 +199,8 @@ def create_new_certificate(
     local_hostname,
 ):
     print('Creating new certificate.')
-    output = io.BytesIO()
-    subprocess.check_call(
-        [
+    stdout, stderr = get_process_stdout_stderr(
+        cmd_parts=[
             'icinga2',
             'pki',
             'new-cert',
@@ -192,12 +215,12 @@ def create_new_certificate(
             '--cn',
             local_hostname,
         ],
-        stdout=output,
     )
 
     print(
-        'Output was: "{output}"'.format(
-            output=output.getvalue()
+        'stdout was: "{stdout}"\nstderr was: "{stderr}"'.format(
+            stdout=stdout,
+            stderr=stderr,
         ),
     )
 
