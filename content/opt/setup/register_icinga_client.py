@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import io
 import sys
 
 import requests
@@ -38,6 +39,7 @@ def get_ticket(
             ticket=ticket,
         ),
     )
+
     return ticket
 
 
@@ -106,6 +108,7 @@ def setup_local_node(
     ticket,
 ):
     print('Performing setup.')
+    output = io.BytesIO()
     subprocess.check_call(
         [
             'icinga2',
@@ -131,7 +134,13 @@ def setup_local_node(
             '--trustedcert',
             '/etc/icinga2/pki/trusted-master.crt',
         ],
-        stdout=sys.stdout,
+        stdout=output,
+    )
+
+    print(
+        'Output was: "{output}"'.format(
+            output=output.getvalue()
+        ),
     )
 
 
@@ -139,6 +148,7 @@ def save_icinga_master_certificate(
     icinga_hostname,
 ):
     print('Getting certificate from master node.')
+    output = io.BytesIO()
     subprocess.check_call(
         [
             'icinga2',
@@ -154,11 +164,18 @@ def save_icinga_master_certificate(
         stdout=sys.stdout,
     )
 
+    print(
+        'Output was: "{output}"'.format(
+            output=output.getvalue()
+        ),
+    )
+
 
 def create_new_certificate(
     local_hostname,
 ):
     print('Creating new certificate.')
+    output = io.BytesIO()
     subprocess.check_call(
         [
             'icinga2',
@@ -168,7 +185,6 @@ def create_new_certificate(
             '/etc/icinga2/pki/{hostname}.key'.format(
                 hostname=local_hostname,
             ),
-
             '--cert',
             '/etc/icinga2/pki/{hostname}.crt'.format(
                 hostname=local_hostname,
@@ -176,7 +192,13 @@ def create_new_certificate(
             '--cn',
             local_hostname,
         ],
-        stdout=sys.stdout,
+        stdout=output,
+    )
+
+    print(
+        'Output was: "{output}"'.format(
+            output=output.getvalue()
+        ),
     )
 
 
