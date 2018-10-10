@@ -27,7 +27,7 @@ RUN \
           vim \
           wget
 
-ADD content/etc/sudoers.d/icinga2 /etc/sudoers.d/icinga2
+ADD content/ /
 RUN chmod +x /opt/setup/setup-aur
 RUN /opt/setup/setup-aur docker
 RUN sudo -u docker trizen --needed --noprogressbar --noedit --noconfirm -S icinga2
