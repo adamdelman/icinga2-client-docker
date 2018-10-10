@@ -10,7 +10,7 @@ This image automatically configures the Icinga client up with the master Icinga 
 
 Recommended execution is via `docker-compose`. There is too much stuff which has to be configured outside the container to run it via plain `docker run` but of course, it would be possible.
 
-    wget https://raw.githubusercontent.com/bebehei/icinga2-client-docker/master/docker-compose.yml
+    wget https://raw.githubusercontent.com/adamdelman/icinga2-client-docker/master/docker-compose.yml
     $EDITOR docker-compose.yml
     docker-compose up
 
@@ -22,6 +22,7 @@ Recommended execution is via `docker-compose`. There is too much stuff which has
 | `ICINGA2_MASTER_FQDN`  | *$ICINGA2_MASTER_HOST* | If your icinga2 master certs' FQDN does not match the hostname, define this in addition. If you set `ICINGA2_MASTER_HOST` correctly, you should not worry about this. |
 | `ICINGA2_API_USERNAME` | root                   | The Icinga API user used to create login tickets. |
 | `ICINGA2_API_PASSWORD` | root                   | The Icinga API password used to create login tickets. |
+
 ## Volume Reference
 
 All these folders are configured and able to get mounted as volume. The bottom ones are not quite neccessary.

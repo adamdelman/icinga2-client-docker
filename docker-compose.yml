@@ -1,19 +1,28 @@
-version: '2'
+version: '2.4'
 services:
-  icinga2:
+  icinga-client:
     image: adamdelman/icinga-client
-    restart: on-failure:5
-    #Set the correct hostname for the image.
-    hostname: icinga2
+    container_name: icinga-client
+    restart: on-failure
+    #Set the correct hostname for the Icinga client.
+    hostname: changeme
     privileged: true
     network_mode: host
     environment:
-      - ICINGA2_MASTER_HOST=mon
-      # If your master's FQDN does not match the hostname, define the name additionally.
-      #- ICINGA2_MASTER_FQDN=mon
+      - ICINGA2_MASTER_HOST=icinga
+      - ICINGA2_API_USERNAME=intsights
+      - ICINGA2_API_PASSWORD=Password1!
+      # If your Icinga master node's FQDN does not match its hostname, define it additionally.
+      #- ICINGA2_MASTER_FQDN=icinga-host
     volumes:
       - ./cache:/var/cache/icinga2
       - ./etc:/etc/icinga2
       - ./lib:/var/lib/icinga2
       - ./log:/var/log/icinga2
       - ./spool:/var/spool/icinga2
+    logging:
+        driver: json-file
+        options:
+            max-size: "10m"
+    ports:
+        - 5665:5665
