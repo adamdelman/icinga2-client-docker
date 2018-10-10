@@ -80,8 +80,7 @@ def main():
         local_hostname=local_hostname,
     )
 
-    get_icinga_master_certificate(
-        local_hostname=local_hostname,
+    save_icinga_master_certificate(
         icinga_hostname=args.icinga_hostname,
     )
 
@@ -97,6 +96,7 @@ def setup_local_node(
     local_hostname,
     ticket_salt,
 ):
+    print('Performing setup.')
     subprocess.check_call(
         [
             'icinga2',
@@ -110,10 +110,8 @@ def setup_local_node(
             '--accept-commands',
             '--zone',
             local_hostname,
-            '--parent_host',
+            '--master_host',
             icinga_hostname,
-            '--parent_zone',
-            'master',
             '--cn',
             local_hostname,
             '--trustedcert',
@@ -123,10 +121,10 @@ def setup_local_node(
     )
 
 
-def get_icinga_master_certificate(
-    local_hostname,
+def save_icinga_master_certificate(
     icinga_hostname,
 ):
+    print('Getting certificate from master node.')
     subprocess.check_call(
         [
             'icinga2',
@@ -136,14 +134,6 @@ def get_icinga_master_certificate(
             icinga_hostname,
             '--port',
             '5665',
-            '--key',
-            '/etc/icinga2/pki/{hostname}.key'.format(
-                hostname=local_hostname,
-            ),
-            '--cert',
-            '/etc/icinga2/pki/{hostname}.crt'.format(
-                hostname=local_hostname,
-            ),
             '--trustedcert',
             '/etc/icinga2/pki/trusted-master.crt',
         ],
@@ -154,6 +144,7 @@ def get_icinga_master_certificate(
 def create_new_certificate(
     local_hostname,
 ):
+    print('Creating new certificate.')
     subprocess.check_call(
         [
             'icinga2',

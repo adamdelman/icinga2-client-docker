@@ -8,25 +8,38 @@ ICINGA2_API_PASSWORD=${ICINGA2_API_PASSWORD:-root}
 ICINGA2_CLIENT_FQDN=${ICINGA2_CLIENT_FQDN:-$(hostname --fqdn)}
 
 
+if [ ! "$(ls -A /etc/icinga2)" ]; then
+  echo "=> Copying fresh config-files for /etc/icinga2"
+  cp -R /etc/icinga2.dist/* /etc/icinga2/
+fi
+
+# chown directories and files that might be coming from volumes
+mkdir -p /var/log/icinga2/compat/archives
+chown -R nagios:adm /var/log/icinga2
+
 mkdir -p /var/lib/icinga2/api/zones
 mkdir -p /var/lib/icinga2/api/log
 mkdir -p /var/lib/icinga2/api/repository
-chown -R icinga:icinga /var/lib/icinga2
-chown -R icinga:icinga /var/spool/icinga2
-chown -R icinga:icinga /var/cache/icinga2
-chown -R icinga:icinga /var/log/icinga2
-chown -R icinga:icinga /etc/icinga2
+chown -R nagios:nagios /var/lib/icinga2
+chown -R nagios:nagios /var/spool/icinga2
+chown -R nagios:nagios /var/cache/icinga2
+
+chown -R nagios:root /etc/icinga2
+
+service icinga2 restart
 
 # enable necessary features
-icinga2 feature enable api livestatus command
+icinga2 feature enable api livestatus compatlog command
 
-if [[ ! -f /var/lib/icinga2/certs/$(hostname).crt ]]
+if [[ ! -f /var/lib/icinga2/certs/$(hostname).crt ]] || [[ ! -f /etc/icinga2/pki/trusted-master.crt ]]
 then
     /opt/setup/register_icinga_client.py --icinga-hostname ${ICINGA2_MASTER_HOST} --username ${ICINGA2_API_USERNAME} --password ${ICINGA2_API_PASSWORD}
 fi
 
-icinga2 daemon -d
+service icinga2 restart
 
-tail -F /var/log/icinga2/* &
+trap "service icinga2 stop" HUP INT QUIT ABRT KILL ALRM TERM TSTP
 
-while pidof icinga2 &>/dev/null; do sleep 5; done
+sleep 5 && tail -F /var/log/icinga2/* &
+
+while pidof icinga2 &>/dev/null; do sleep 10; done
