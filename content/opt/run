@@ -8,22 +8,22 @@ ICINGA2_API_PASSWORD=${ICINGA2_API_PASSWORD:-root}
 ICINGA2_CLIENT_FQDN=${ICINGA2_CLIENT_FQDN:-$(hostname --fqdn)}
 
 
-if [ ! "$(ls -A /etc/icinga2)" ]; then
+if [ ! "$(ls -A /etc/icinga2/features-available)" ]; then
   echo "=> Copying fresh config-files for /etc/icinga2"
-  cp -R /etc/icinga2.dist/* /etc/icinga2/
+    mkdir -p /etc/icinga2/
+    cp -R /etc/icinga2.dist/* /etc/icinga2/
 fi
 
 # chown directories and files that might be coming from volumes
 mkdir -p /var/log/icinga2/compat/archives
-chown -R nagios:adm /var/log/icinga2
-
 mkdir -p /var/lib/icinga2/api/zones
 mkdir -p /var/lib/icinga2/api/log
 mkdir -p /var/lib/icinga2/api/repository
+
+chown -R nagios:adm /var/log/icinga2
 chown -R nagios:nagios /var/lib/icinga2
 chown -R nagios:nagios /var/spool/icinga2
 chown -R nagios:nagios /var/cache/icinga2
-
 chown -R nagios:root /etc/icinga2
 
 if [[ ! -f /var/lib/icinga2/certs/$(hostname).crt ]] || [[ ! -f /etc/icinga2/pki/trusted-master.crt ]]
@@ -32,12 +32,17 @@ then
 fi
 
 # enable necessary features
-icinga2 feature enable api livestatus compatlog command
+icinga2 feature enable api livestatus compatlog command debuglog
 
 service icinga2 restart
 
 trap "service icinga2 stop" HUP INT QUIT ABRT KILL ALRM TERM TSTP
 
-sleep 5 && tail -F /var/log/icinga2/* &
+tail -F /var/log/icinga2/startup.log &
+tail -F /var/log/icinga2/icinga.err &
+tail -F /var/log/icinga2/icinga.log &
+tail -F /var/log/icinga2/debug.log &
+tail -F /var/log/icinga2/mysql-schema.log &
+
 
 while pidof icinga2 &>/dev/null; do sleep 10; done
