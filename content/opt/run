@@ -8,7 +8,7 @@ ICINGA2_API_PASSWORD=${ICINGA2_API_PASSWORD:-root}
 ICINGA2_CLIENT_FQDN=${ICINGA2_CLIENT_FQDN:-$(hostname --fqdn)}
 
 
-if [ ! "$(ls -A /etc/icinga2/features-available)" ]; then
+if [ ! -f /etc/icinga2/icinga2.conf ]; then
   echo "=> Copying fresh config-files for /etc/icinga2"
     mkdir -p /etc/icinga2/
     cp -R /etc/icinga2.dist/* /etc/icinga2/
