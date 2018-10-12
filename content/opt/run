@@ -32,7 +32,7 @@ then
 fi
 
 # enable necessary features
-icinga2 feature enable api livestatus compatlog command debuglog
+icinga2 feature enable api livestatus compatlog command
 
 service icinga2 restart
 
