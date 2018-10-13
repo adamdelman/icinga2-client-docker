@@ -9,7 +9,7 @@ ADD content/etc/sources.list.d/icinga2.list /etc/sources.list.d/icinga2.list
 
 RUN apt update && \
     apt-get -qy upgrade && \
-    apt-get -qy install --no-install-recommends -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+    apt-get -qy install --no-install-recommends -o Dpkg::Options::="--force-confnew" \
           ethtool \
           icinga2 \
           monitoring-plugins \

@@ -39,10 +39,10 @@ service icinga2 restart
 trap "service icinga2 stop" HUP INT QUIT ABRT KILL ALRM TERM TSTP
 
 tail -F /var/log/icinga2/startup.log &
-tail -F /var/log/icinga2/icinga.err &
-tail -F /var/log/icinga2/icinga.log &
+tail -F /var/log/icinga2/icinga2.err &
+tail -F /var/log/icinga2/icinga2.log &
 tail -F /var/log/icinga2/debug.log &
-tail -F /var/log/icinga2/mysql-schema.log &
+tail -F /var/log/icinga2/compat/icinga.log &
 
 sleep 60
 while pidof icinga2 &>/dev/null; do sleep 10; done
